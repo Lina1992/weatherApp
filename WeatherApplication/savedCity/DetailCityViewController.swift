@@ -11,38 +11,52 @@ import UIKit
 class DetailCityViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource
 {
 
-    @IBOutlet weak var daysSegmentedControl: UISegmentedControl!
-    @IBAction func daysSegmentedControlValueChanged(_ sender: Any) {
-        self.reloadCollectionView()
-    }
-    
     @IBOutlet weak var collectionView: UICollectionView!
-    //weatherDayCellIdentifer
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.createDesign()
+        self.reloadCollectionView()
     }
-    
-    var cityToShow : City!
     func createDesign()
     {
         print("cityToShow",cityToShow)
         self.title = cityToShow?.cityName
     }
-    func reloadCollectionView()
-    {
-        if(self.daysSegmentedControl.selectedSegmentIndex==0)
-        {
-            self.reloadCollectionView(daysNumber: 3)
-        }
-        else
-        {
-            self.reloadCollectionView(daysNumber: 7)
-        }
+    //кнопки переключатели
+    @IBOutlet weak var daysSegmentedControl: UISegmentedControl!
+    @IBAction func daysSegmentedControlValueChanged(_ sender: Any) {
+        self.getInfoForCollectionView()
     }
-    func reloadCollectionView(daysNumber:NSInteger)
+    var cityToShow : City!
+    //загрузка данных для коллекции
+    func reloadCollectionViewBySegmentControl()
     {
-        
+        self.collectionView.reloadData()
+    }
+    
+    func getInfoForCollectionView()
+    {
+        let weather = WeatherGetter()
+        weather.getWeatherForDays(CityId: cityToShow.cityCode,  withCompletion: {
+            (response) in
+            DispatchQueue.main.async {
+                //arrayWithWeather=response.va
+                self.collectionView.reloadData()
+            }
+        })
+    }
+    var arrayWithWeather : NSArray = NSArray.init()
+    
+    //рисуем коллекцию
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return arrayWithWeather.count
+    }
+    func collectionView(_ collectionView: UICollectionView,
+                                 cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "weatherDayCellIdentifer",
+                                                      for: indexPath) as! weatherDayCollectionViewCell
+        cell.configure(with: arrayWithWeather[indexPath.row] as! NSDictionary)
+        return cell
     }
 }

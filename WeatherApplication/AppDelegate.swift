@@ -7,16 +7,45 @@
 //
 
 import UIKit
-
+import MapKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     var window: UIWindow?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        self.saveDefaultCities()
+        self.createCitiesArray()
         // Override point for customization after application launch.
         return true
+    }
+    var citiesArray : NSMutableArray = []
+    func createCitiesArray(){
+        citiesArray = NSMutableArray.init()
+        citiesArray = (City.loadCitiesFromDisk()! as NSArray).mutableCopy() as! NSMutableArray
+        print("citiesArray=",citiesArray)
+        
+        //citiesArray
+    }
+    func saveDefaultCities()
+    {
+        let defaults = UserDefaults.standard
+        if(!(defaults.string(forKey: "defaultCitiesSaved") != nil) as Bool)
+        {
+            //let player1 = Player(name: "John")
+            let moscow = City(cityName: "Москва", cityCode: 524901, cityCoordinate:CLLocationCoordinate2DMake(55.751244,37.618423))
+            let nino = City(cityName: "Нижний Новгород" , cityCode: 520555, cityCoordinate:CLLocationCoordinate2DMake(56.326944,44.0075))
+            let volgograd = City(cityName: "Волгоград" , cityCode: 472757, cityCoordinate:CLLocationCoordinate2DMake(48.700001,44.516666))
+            City.saveCitiesToDisk(cities: [moscow,nino,volgograd])
+            print("defaultCitiesWasNotSaved")
+            defaults.set("defaultCitiesWasSaved", forKey: "defaultCitiesSaved")
+            
+        }
+        else
+        {
+            print("defaultCitiesWasSaved")
+        }
+        
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

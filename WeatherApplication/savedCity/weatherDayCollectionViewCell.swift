@@ -7,7 +7,18 @@
 //
 
 import UIKit
-
-class weatherDayCollectionViewCell: UICollectionViewCell {
+class weatherDayCollectionViewCell: UICollectionViewCell
+{
     
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var temperatureLabel: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+    
+    public func configure(with data: NSDictionary) {
+        
+    }
 }
